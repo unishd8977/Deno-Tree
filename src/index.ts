@@ -1,11 +1,13 @@
-import type { FileMetadata, TreeOptions } from '@app/Types.ts'
-import { formatDirectory } from '@app/Utils.ts'
+import type { FileMetadata, GenerateOptions, TreeOptions } from '@app/Types.ts'
+import { Generator } from '@app/Generator.ts'
 
 /**
  * File tree generator and manager.
  * @description Handles file system scanning, metadata collection, and tree generation.
  */
 class Tree {
+  /** Generator instance for output formatting */
+  private generator = new Generator()
   /** Internal file metadata storage */
   private files = new Map<string, FileMetadata>()
   /** Tree generation options */
@@ -25,20 +27,24 @@ class Tree {
   /**
    * Generates a formatted tree string from scanned files.
    * @param rootPath - Root directory path
-   * @returns Formatted tree string
+   * @param options - Generation options including output format
+   * @returns Formatted tree string in specified format
    */
-  async generate(rootPath: string): Promise<string> {
-    try {
-      const allFiles = Array.from(this.files.values())
-      const absoluteRootPath = await Deno.realPath(rootPath)
-      const rootFiles = allFiles.filter(f => f.path.startsWith(`${absoluteRootPath}/`))
-      if (rootFiles.length === 0) {
-        return ''
-      }
-      const rootName = rootPath.split('/').pop() || rootPath
-      return formatDirectory(rootName, absoluteRootPath, 0, allFiles, this.options.showHidden)
-    } catch {
-      return ''
+  async generate(rootPath: string, options: GenerateOptions = {}): Promise<string> {
+    const format = options.format || 'tree'
+    switch (format) {
+      case 'tree':
+        return await this.generator.generateTreeFormat(
+          rootPath,
+          this.files,
+          this.options.showHidden || false
+        )
+      case 'json':
+        return await this.generator.generateJsonFormat(rootPath, this.files)
+      case 'markdown':
+        return await this.generator.generateMarkdownFormat(rootPath, this.files)
+      default:
+        throw new Error(`Unsupported format: ${format}`)
     }
   }
 

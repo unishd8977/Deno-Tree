@@ -6,6 +6,7 @@ A file tree generator for Deno. Generate beautiful directory trees instantly fro
 
 - [Installation](#installation)
 - [Quick Start](#quick-start)
+  - [Multiple Output Formats](#multiple-output-formats)
 - [Configuration](#configuration)
   - [Tree Options](#tree-options)
   - [Performance Settings](#performance-settings)
@@ -18,7 +19,9 @@ A file tree generator for Deno. Generate beautiful directory trees instantly fro
 - [API Reference](#api-reference)
   - [Main API](#main-api)
   - [Configuration Options](#configuration-options)
+  - [Generate Options](#generate-options)
   - [File Metadata](#file-metadata)
+  - [Tree Node Structure](#tree-node-structure)
 - [Troubleshooting](#troubleshooting)
   - [Common Issues](#common-issues)
   - [Debug Mode](#debug-mode)
@@ -28,7 +31,7 @@ A file tree generator for Deno. Generate beautiful directory trees instantly fro
 ## Installation
 
 ```bash
-deno install @neabyte/deno-tree
+deno add jsr:@neabyte/deno-tree
 ```
 
 ## Quick Start
@@ -66,6 +69,84 @@ console.log(result)
 └── README.md
 ```
 
+### Multiple Output Formats
+
+```ts
+import tree from '@neabyte/deno-tree'
+
+await tree.init('/path/to/directory', {
+  ignoreDirs: ['node_modules', '.git', 'dist'],
+  maxFiles: 1000,
+  showHidden: false,
+  maxDepth: 3
+})
+
+// Tree format (default)
+const treeOutput = await tree.generate('/path/to/directory')
+console.log(treeOutput)
+
+// JSON format
+const jsonOutput = await tree.generate('/path/to/directory', { format: 'json' })
+console.log(jsonOutput)
+
+// Markdown format
+const markdownOutput = await tree.generate('/path/to/directory', { format: 'markdown' })
+console.log(markdownOutput)
+```
+
+**Format Examples:**
+
+**Tree Format:**
+
+```
+.
+├── src/
+│   ├── components/
+│   │   ├── Button.tsx
+│   │   └── Modal.tsx
+│   └── index.ts
+├── deno.json
+└── README.md
+```
+
+**JSON Format:**
+
+```json
+{
+  "name": "project",
+  "type": "directory",
+  "path": "/path/to/project",
+  "children": [
+    {
+      "name": "src",
+      "type": "directory",
+      "path": "/path/to/project/src",
+      "children": [
+        {
+          "name": "Button.tsx",
+          "type": "file",
+          "path": "/path/to/project/src/Button.tsx",
+          "size": 1024,
+          "extension": "tsx"
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Markdown Format:**
+
+```
+project/
+  - src/
+    - Button.tsx
+    - Modal.tsx
+    - index.ts
+  - deno.json
+  - README.md
+```
+
 ## Configuration
 
 ### Tree Options
@@ -76,6 +157,15 @@ interface TreeOptions {
   maxFiles?: number // Maximum files to process (default: unlimited)
   showHidden?: boolean // Show hidden files/directories (default: false)
   maxDepth?: number // Maximum directory depth (default: unlimited)
+}
+```
+
+### Generate Options
+
+```ts
+interface GenerateOptions {
+  format?: 'tree' | 'json' | 'markdown' // Output format (default: 'tree')
+  includeStats?: boolean // Include file statistics (default: false)
 }
 ```
 
@@ -134,6 +224,7 @@ const projectA = await tree.generate('/workspace/project-a')
 const projectB = await tree.generate('/workspace/project-b')
 const projectC = await tree.generate('/workspace/project-c')
 
+// Log the trees
 console.log('Project A Tree:', projectA)
 console.log('Project B Tree:', projectB)
 console.log('Project C Tree:', projectC)
@@ -202,13 +293,13 @@ console.log('Project B:', treeB)
 
 ### Main API
 
-| Method       | Description                            | Parameters                            | Returns           |
-| ------------ | -------------------------------------- | ------------------------------------- | ----------------- |
-| `clear()`    | Clear all stored file metadata         | None                                  | `void`            |
-| `generate()` | Generate formatted tree string         | `rootPath: string`                    | `Promise<string>` |
-| `init()`     | Scan directory and store file metadata | `path: string, options?: TreeOptions` | `Promise<void>`   |
-| `remove()`   | Remove file/directory from tree        | `path: string`                        | `Promise<void>`   |
-| `set()`      | Add single file to tree metadata       | `path: string`                        | `Promise<void>`   |
+| Method       | Description                            | Parameters                                    | Returns           |
+| ------------ | -------------------------------------- | --------------------------------------------- | ----------------- |
+| `clear()`    | Clear all stored file metadata         | None                                          | `void`            |
+| `generate()` | Generate formatted tree string         | `rootPath: string, options?: GenerateOptions` | `Promise<string>` |
+| `init()`     | Scan directory and store file metadata | `path: string, options?: TreeOptions`         | `Promise<void>`   |
+| `remove()`   | Remove file/directory from tree        | `path: string`                                | `Promise<void>`   |
+| `set()`      | Add single file to tree metadata       | `path: string`                                | `Promise<void>`   |
 
 ### Configuration Options
 
@@ -218,6 +309,13 @@ console.log('Project B:', treeB)
 | `maxFiles`   | number   | ❌       | Maximum files to process      | `1000`                     |
 | `showHidden` | boolean  | ❌       | Show hidden files/directories | `false`                    |
 | `maxDepth`   | number   | ❌       | Maximum directory depth       | `3`                        |
+
+### Generate Options
+
+| Property       | Type    | Required | Description             | Example                |
+| -------------- | ------- | -------- | ----------------------- | ---------------------- |
+| `format`       | string  | ❌       | Output format           | `'json'`, `'markdown'` |
+| `includeStats` | boolean | ❌       | Include file statistics | `true`                 |
 
 ### File Metadata
 
@@ -230,6 +328,20 @@ interface FileMetadata {
   size?: number // File size in bytes
   modified?: Date // Last modified date
   extension?: string // File extension
+}
+```
+
+### Tree Node Structure
+
+```ts
+interface TreeNode {
+  name: string // Node name
+  type: 'file' | 'directory' // Node type
+  path: string // Absolute path
+  size?: number // File size in bytes
+  modified?: Date // Last modification date
+  extension?: string // File extension
+  children?: TreeNode[] // Child nodes
 }
 ```
 
@@ -260,14 +372,21 @@ interface FileMetadata {
 ```ts
 import tree from '@neabyte/deno-tree'
 
-// Debug file storage
+// Debug file storage and generation
 await tree.init('/path/to/project', { maxFiles: 100 })
-console.log('Files stored:', tree.files.size)
 
 // Debug specific path generation
 const result = await tree.generate('/path/to/project/src')
 console.log('Generated tree length:', result.length)
 console.log('Tree output:', result)
+
+// Debug JSON format
+const jsonResult = await tree.generate('/path/to/project', { format: 'json' })
+console.log('JSON output length:', jsonResult.length)
+
+// Debug markdown format
+const markdownResult = await tree.generate('/path/to/project', { format: 'markdown' })
+console.log('Markdown output length:', markdownResult.length)
 ```
 
 ## Contributing
